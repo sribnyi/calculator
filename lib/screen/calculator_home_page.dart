@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'calculator_button.dart';
-import 'calculator_model.dart';
+import '../model/calculator_model.dart';
 
 class CalculatorHomePage extends StatefulWidget {
   const CalculatorHomePage({Key? key}) : super(key: key);
@@ -10,23 +9,27 @@ class CalculatorHomePage extends StatefulWidget {
 }
 
 class _CalculatorHomePageState extends State<CalculatorHomePage> {
-  final _model = CalculatorModel(); // create an instance of the CalculatorModel class
+  final _model = CalculatorModel();
   String _output = "0";
-  final String _operator = "";
-  final double _num1 = 0.0;
-  double _num2 = 0.0;
 
   void _buttonPressed(String buttonText) {
     setState(() {
       if (buttonText == "C") {
         _model.clear();
-      } else if (buttonText == "+" || buttonText == "-" || buttonText == "*" ||
+      } else if (buttonText == "+" ||
+          buttonText == "-" ||
+          buttonText == "*" ||
           buttonText == "/") {
         _model.setOperator(buttonText);
       } else if (buttonText == ".") {
         _model.addDecimal();
       } else if (buttonText == "=") {
-        _model.calculate();
+        _model.calculate(); // Call calculate method in CalculatorModel
+        _output = _model.output;
+        if (_model.input.isNotEmpty && _model.output.isNotEmpty) {
+          _model.addToHistory(_model.input,
+              _model.output); // Pass input and output to addToHistory
+        }
       } else {
         _model.addDigit(buttonText);
       }
@@ -73,18 +76,40 @@ class _CalculatorHomePageState extends State<CalculatorHomePage> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calculator'),
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'km-mi') {
+                Navigator.pushNamed(context, '/converter');
+              } else if (value == 'history') {
+                Navigator.pushNamed(context, '/history');
+              }
+            },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'km-mi',
+                child: Text('KM <-> Mile'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'history',
+                child: Text('History'),
+              ),
+            ],
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[
           Container(
             alignment: Alignment.centerRight,
-            padding: const EdgeInsets.symmetric(
-                horizontal: 24.0, vertical: 12.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
             child: Text(
               _output,
               style: const TextStyle(fontSize: 48.0),

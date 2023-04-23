@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../model/button_model.dart';
 import '../model/calculator_model.dart';
 
 class CalculatorHomePage extends StatefulWidget {
@@ -37,43 +38,11 @@ class _CalculatorHomePageState extends State<CalculatorHomePage> {
     });
   }
 
-  Widget _buildNumberButton(String buttonText) {
-    return Expanded(
-      child: SizedBox(
-        height: 70,
-        child: ElevatedButton(
-          onPressed: () => _buttonPressed(buttonText),
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.black,
-            backgroundColor: Colors.grey[400],
-            shape: const CircleBorder(),
-          ),
-          child: Text(
-            buttonText,
-            style: const TextStyle(fontSize: 28),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOperatorButton(String buttonText) {
-    return Expanded(
-      child: SizedBox(
-        height: 70,
-        child: ElevatedButton(
-          onPressed: () => _buttonPressed(buttonText),
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.black,
-            backgroundColor: Colors.orange,
-            shape: const CircleBorder(),
-          ),
-          child: Text(
-            buttonText,
-            style: const TextStyle(fontSize: 28),
-          ),
-        ),
-      ),
+  Widget _buildButton(String buttonText, ButtonType buttonType) {
+    return CalculatorButton(
+      buttonText: buttonText,
+      buttonType: buttonType,
+      onPressed: _buttonPressed,
     );
   }
 
@@ -118,48 +87,48 @@ class _CalculatorHomePageState extends State<CalculatorHomePage> {
           Expanded(
             child: Row(
               children: <Widget>[
-                _buildNumberButton('7'),
-                _buildNumberButton('8'),
-                _buildNumberButton('9'),
-                _buildOperatorButton('/'),
+                _buildButton('7', ButtonType.number),
+                _buildButton('8', ButtonType.number),
+                _buildButton('9', ButtonType.number),
+                _buildButton('/', ButtonType.operator),
               ],
             ),
           ),
           Expanded(
             child: Row(
               children: <Widget>[
-                _buildNumberButton('4'),
-                _buildNumberButton('5'),
-                _buildNumberButton('6'),
-                _buildOperatorButton('*'),
+                _buildButton('4', ButtonType.number),
+                _buildButton('5', ButtonType.number),
+                _buildButton('6', ButtonType.number),
+                _buildButton('*', ButtonType.operator),
               ],
             ),
           ),
           Expanded(
             child: Row(
               children: <Widget>[
-                _buildNumberButton('1'),
-                _buildNumberButton('2'),
-                _buildNumberButton('3'),
-                _buildOperatorButton('-'),
+                _buildButton('1', ButtonType.number),
+                _buildButton('2', ButtonType.number),
+                _buildButton('3', ButtonType.number),
+                _buildButton('-', ButtonType.operator),
               ],
             ),
           ),
           Expanded(
             child: Row(
               children: <Widget>[
-                _buildOperatorButton('.'),
-                _buildNumberButton('0'),
-                _buildNumberButton('00'),
-                _buildOperatorButton('+'),
+                _buildButton('.', ButtonType.operator),
+                _buildButton('0', ButtonType.number),
+                _buildButton('00', ButtonType.number),
+                _buildButton('+', ButtonType.operator),
               ],
             ),
           ),
           Expanded(
             child: Row(
               children: <Widget>[
-                _buildOperatorButton('C'),
-                _buildOperatorButton('='),
+                _buildButton('C', ButtonType.operator),
+                _buildButton('=', ButtonType.operator),
               ],
             ),
           ),

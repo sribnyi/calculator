@@ -48,8 +48,8 @@ class CalculatorModel {
     List<String> operators = _input.split(RegExp(r'[0-9.]+'));
 
 
-  }
 
+  }
 
   //   void calculate() {
   //   _num2 = double.parse(_output);

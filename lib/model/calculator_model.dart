@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -63,17 +64,23 @@ class CalculatorModel {
   }
 
   void addToHistory(String input, String output) async {
-    final prefs = await SharedPreferences.getInstance();
-    final history = prefs.getStringList('history') ?? [];
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final history = prefs.getStringList('history') ?? [];
 
-    final historyItem = {
-      'input': input,
-      'output': output,
-      'timestamp': DateTime.now().toIso8601String(),
-    };
+      final historyItem = {
+        'input': input,
+        'output': output,
+        'timestamp': DateTime.now().toIso8601String(),
+      };
 
-    history.add(jsonEncode(historyItem));
-    prefs.setStringList('history', history);
+      history.add(jsonEncode(historyItem));
+      prefs.setStringList('history', history);
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error saving history: $e");
+      }
+    }
   }
 
   void addDigit(String digit) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ConverterScreen extends StatefulWidget {
   const ConverterScreen({Key? key}) : super(key: key);
@@ -82,6 +83,7 @@ class _ConverterScreenState extends State<ConverterScreen> {
               TextField(
                 controller: _kmController,
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d*)?'))],
                 decoration: const InputDecoration(
                   labelText: 'Kilometers',
                   border: OutlineInputBorder(),
@@ -94,6 +96,7 @@ class _ConverterScreenState extends State<ConverterScreen> {
               TextField(
                 controller: _miController,
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d*)?'))],
                 decoration: const InputDecoration(
                   labelText: 'Miles',
                   border: OutlineInputBorder(),

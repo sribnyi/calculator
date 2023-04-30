@@ -1,8 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-class CalculatorModel extends ChangeNotifier {
+class CalculatorModel {
   String _input = '';
   String _output = '0';
   double _num1 = 0.0;

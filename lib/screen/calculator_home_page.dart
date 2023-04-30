@@ -15,24 +15,29 @@ class _CalculatorHomePageState extends State<CalculatorHomePage> {
 
   void _buttonPressed(String buttonText) {
     setState(() {
-      if (buttonText == "C") {
-        _model.clear();
-      } else if (buttonText == "+" ||
-          buttonText == "-" ||
-          buttonText == "*" ||
-          buttonText == "/") {
-        _model.setOperator(buttonText);
-      } else if (buttonText == ".") {
-        _model.addDecimal();
-      } else if (buttonText == "=") {
-        _model.calculate(); // Call calculate method in CalculatorModel
-        _output = _model.output;
-        if (_model.input.isNotEmpty && _model.output.isNotEmpty) {
-          _model.addToHistory(_model.input,
-              _model.output); // Pass input and output to addToHistory
-        }
-      } else {
-        _model.addDigit(buttonText);
+      switch (buttonText) {
+        case "C":
+          _model.clear();
+          break;
+        case "+":
+        case "-":
+        case "*":
+        case "/":
+          _model.setOperator(buttonText);
+          break;
+        case ".":
+          _model.addDecimal();
+          break;
+        case "=":
+          _model.calculate(); // call the calculate method in CalculatorModel
+          _output = _model.output;
+          if (_model.input.isNotEmpty && _model.output.isNotEmpty) {
+            _model.addToHistory(
+                _model.input, _model.output); // pass I/O to addToHistory
+          }
+          break;
+        default:
+          _model.addDigit(buttonText);
       }
       _output = _model.output;
     });

@@ -40,29 +40,40 @@ class CalculatorModel {
     }
   }
 
+  // new calculate method to support more than two numbers
   void calculate() {
-    _num2 = double.parse(_output);
-    switch (_operator) {
-      case "+":
-        _output = (_num1 + _num2).toString();
-        break;
-      case "-":
-        _output = (_num1 - _num2).toString();
-        break;
-      case "*":
-        _output = (_num1 * _num2).toString();
-        break;
-      case "/":
-        _output = (_num1 / _num2).toString();
-        break;
-      default:
-        break;
-    }
-    _operator = "";
-    _num1 = 0.0;
-    _num2 = 0.0;
+    List<double> digits = _input.split(RegExp(r'[+\-*/]')).cast<double>();
+    // Regexp filters out operators: - subtraction (escaped the range symbol
+    // with a \), + addition, * multiplication, / division.
+    List<String> operators = _input.split(RegExp(r'[0-9.]+'));
+
+
   }
 
+
+  //   void calculate() {
+  //   _num2 = double.parse(_output);
+  //   switch (_operator) {
+  //     case "+":
+  //       _output = (_num1 + _num2).toString();
+  //       break;
+  //     case "-":
+  //       _output = (_num1 - _num2).toString();
+  //       break;
+  //     case "*":
+  //       _output = (_num1 * _num2).toString();
+  //       break;
+  //     case "/":
+  //       _output = (_num1 / _num2).toString();
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  //   _operator = "";
+  //   _num1 = 0.0;
+  //   _num2 = 0.0;
+  // }
+  //
   void addToHistory(String input, String output) async {
     try {
       final prefs = await SharedPreferences.getInstance();

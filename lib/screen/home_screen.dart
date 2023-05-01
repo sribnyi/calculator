@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../model/button_model.dart';
 import '../model/calculator_model.dart';
+import '../controller/calculator_controller.dart'; // Import CalculatorController
 
 class CalculatorHomePage extends StatefulWidget {
   const CalculatorHomePage({Key? key}) : super(key: key);
@@ -11,43 +12,30 @@ class CalculatorHomePage extends StatefulWidget {
 
 class _CalculatorHomePageState extends State<CalculatorHomePage> {
   final _model = CalculatorModel();
-  String _output = "0";
 
-  void _buttonPressed(String buttonText) {
-    setState(() {
-      switch (buttonText) {
-        case "C":
-          _model.clear();
-          break;
-        case "+":
-        case "-":
-        case "*":
-        case "/":
-          _model.setOperator(buttonText);
-          break;
-        case ".":
-          _model.addDecimal();
-          break;
-        case "=":
-          _model.calculate(); // call the calculate method in CalculatorModel
-          _output = _model.output;
-          if (_model.input.isNotEmpty && _model.output.isNotEmpty) {
-            _model.addToHistory(
-                _model.input, _model.output); // pass I/O to addToHistory
-          }
-          break;
-        default:
-          _model.addDigit(buttonText);
-      }
-      _output = _model.output;
-    });
+  /// declaring an instance of 'CalculatorController', 'late' means that the
+  /// variable will be initialized later
+  late final CalculatorController controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    /// initializing the instance in 'initState'
+    controller = CalculatorController(_model);
   }
+
+  String get _output => _model.output;
 
   Widget _buildButton(String buttonText, ButtonType buttonType) {
     return CalculatorButton(
       buttonText: buttonText,
       buttonType: buttonType,
-      onPressed: _buttonPressed,
+      onPressed: (value) {
+        setState(() {
+          controller.buttonPressed(value);
+        });
+      },
     );
   }
 

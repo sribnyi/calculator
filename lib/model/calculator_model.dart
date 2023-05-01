@@ -1,8 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:logger/logger.dart';
 
 class CalculatorModel {
+  final Logger logger = Logger();
+
   String _input = '';
   String _output = '0';
   double _num1 = 0.0;
@@ -30,7 +33,7 @@ class CalculatorModel {
   void setOperator(String operator) {
     _num1 = double.parse(_output);
     _operator = operator;
-    _input = '$_num1 $operator '; // Update input with the operator and num1
+    _input = '$_num1 $operator ';
     _output = "0";
   }
 
@@ -40,40 +43,49 @@ class CalculatorModel {
     }
   }
 
-  // new calculate method to support more than two numbers
+  /// new calculate method to support more than two numbers/operators
   void calculate() {
-    List<double> digits = _input.split(RegExp(r'[+\-*/]')).cast<double>();
-    // Regexp filters out operators: - subtraction (escaped the range symbol
-    // with a \), + addition, * multiplication, / division.
+    /// Regexp filters out operators: '-' subtraction (escaped the '-' symbol
+    /// with a '\'), '+' addition, '*' multiplication, '/' division
+    List<String> digits = _input.split(RegExp(r'[+\-*/]'));
+
+    /// RegExp filter out numbers. Range of [0 to 9] followed by a '.' to
+    /// include decimal numbers. The '+' to include all preceding matches
     List<String> operators = _input.split(RegExp(r'[0-9.]+'));
 
+    /// removing the first element of the operators list if it's empty
+    if (operators.isNotEmpty && operators.first.isEmpty) {
+      operators.removeAt(0);
+    }
+
+    double result = double.parse(digits[0]);
 
 
+    for (int i = 0; i < operators.length; i++) {
+      switch (operators[i]) {
+        case "+":
+          result += double.parse(digits[i + 1]);
+          break;
+        case "-":
+          result -= double.parse(digits[i + 1]);
+          break;
+        case "*":
+          result *= double.parse(digits[i + 1]);
+          break;
+        case "/":
+          result /= double.parse(digits[i + 1]);
+          break;
+        default:
+          break;
+      }
+    }
+
+    _output = result.toString();
+
+    logger.d(digits.toString());
+    logger.d(operators.toString());
   }
 
-  //   void calculate() {
-  //   _num2 = double.parse(_output);
-  //   switch (_operator) {
-  //     case "+":
-  //       _output = (_num1 + _num2).toString();
-  //       break;
-  //     case "-":
-  //       _output = (_num1 - _num2).toString();
-  //       break;
-  //     case "*":
-  //       _output = (_num1 * _num2).toString();
-  //       break;
-  //     case "/":
-  //       _output = (_num1 / _num2).toString();
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  //   _operator = "";
-  //   _num1 = 0.0;
-  //   _num2 = 0.0;
-  // }
-  //
   void addToHistory(String input, String output) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -94,12 +106,16 @@ class CalculatorModel {
     }
   }
 
-  void addDigit(String digit) {
-    if (_output == "0") {
-      _output = digit;
+  void appendToInput(String value) {
+    if (_output == "0" && value != ".") {
+      _output = value;
     } else {
-      _output += digit;
+      _output += value;
     }
-    _input += digit; // Update input with the digit
+    _input += value;
+  }
+
+  void clearInput() {
+    _input = "";
   }
 }

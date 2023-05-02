@@ -21,44 +21,6 @@ class CalculatorModel {
     _operator = '';
   }
 
-  // /// new calculate method to support more than two numbers/operators
-  // void calculate() {
-  //   logger.i(_input);
-  //
-  //   /// Regexp filters out operators: '-' subtraction (escaped the '-' symbol
-  //   /// with a '\'), '+' addition, '*' multiplication, '/' division
-  //   List<String> digits = _input.split(RegExp(r'[+\-*/]'));
-  //
-  //   /// RegExp filter out numbers. Range of [0 to 9] followed by a '.' to
-  //   /// include decimal numbers. The '+' to include all preceding matches
-  //   List<String> operators =
-  //       _input.split(RegExp(r'[0-9.]+')).where((e) => e.isNotEmpty).toList();
-  //
-  //   /// removing the first element of the operators list if it's empty
-  //   double result = double.parse(digits[0]);
-  //
-  //   for (int i = 0; i < operators.length; i++) {
-  //     double nextNumber = double.parse(digits[i + 1]);
-  //     String operator = operators[i];
-  //
-  //     switch (operator) {
-  //       case "+":
-  //         result += nextNumber;
-  //         break;
-  //       case "-":
-  //         result -= nextNumber;
-  //         break;
-  //       case "*":
-  //         result *= nextNumber;
-  //         break;
-  //       case "/":
-  //         result /= nextNumber;
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //   }
-
   /// new calculate method to support more than two numbers/operators
   void calculate() {
     logger.i(_input);
@@ -66,15 +28,48 @@ class CalculatorModel {
     /// Regexp filters out operators: '-' subtraction (escaped the '-' symbol
     /// with a '\'), '+' addition, '*' multiplication, '/' division
     List<String> digits = _input.split(RegExp(r'[+\-*/]'));
+    logger.i(digits);
 
     /// RegExp filter out numbers. Range of [0 to 9] followed by a '.' to
     /// include decimal numbers. The '+' to include all preceding matches
-    List<String> operators =
-        _input.split(RegExp(r'[0-9.]+')).where((e) => e.isNotEmpty).toList();
+    List<String> operators = _input.split(RegExp(r'[0-9.]+')).where(
 
-    /// removing the first element of the operators list if it's empty
-    Decimal result = Decimal.parse(digits[0]);
+        /// '(e) => e.isNotEmpty' is shortened from:
+        /// bool isNotEmptyFunction(String e) {
+        ///   return e.isNotEmpty;
+        /// }
+        (e) => e.isNotEmpty).toList();
 
+    Decimal result;
+
+    /// first iteration - multiplication and division
+    for (int i = 0; i < operators.length; i++) {
+      if (operators[i] == "*" || operators[i] == "/") {
+        Decimal firstNumber = Decimal.parse(digits[i]);
+        Decimal secondNumber = Decimal.parse(digits[i + 1]);
+
+        if (operators[i] == "*") {
+          result = firstNumber * secondNumber;
+        } else {
+          /// 'Rational' translates 0.5/45 to 1/90 or 0.23/0.5 to 23/50
+          Rational r = firstNumber / secondNumber;
+          /// 'Rational' can be parsed to 'Decimal', but needs a
+          /// 'scaleOnInfinitePrecision' - trailing numbers after decimal
+          result = r.toDecimal(scaleOnInfinitePrecision: 8);
+        }
+
+        digits.removeAt(i + 1);
+        digits[i] = result.toString();
+        operators.removeAt(i);
+        /// Adjust the index after removing an element
+        i--;
+      }
+    }
+
+    /// initializing result for the second iteration
+    result = Decimal.parse(digits[0]);
+
+    /// second iteration - addition and subtraction
     for (int i = 0; i < operators.length; i++) {
       Decimal nextNumber = Decimal.parse(digits[i + 1]);
       String operator = operators[i];
@@ -86,14 +81,6 @@ class CalculatorModel {
         case "-":
           result -= nextNumber;
           break;
-        case "*":
-          result *= nextNumber;
-          break;
-        case "/":
-          logger.i(result / nextNumber);
-          Rational r = result / nextNumber;
-          result = r.toDecimal(scaleOnInfinitePrecision: 8);
-          break;
         default:
           break;
       }
@@ -101,8 +88,6 @@ class CalculatorModel {
 
     /// showing off out my ternary conditional expression skill
     _output = result.toString();
-    logger.i(digits.toString());
-    logger.i(operators.toString());
   }
 
   void appendToInput(String value) {
@@ -116,5 +101,13 @@ class CalculatorModel {
 
   void clearInput() {
     _input = "";
+  }
+
+  void setInput(String s) {
+    _input = s;
+  }
+
+  getOutput() {
+    return output;
   }
 }
